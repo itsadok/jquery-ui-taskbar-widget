@@ -1,0 +1,49 @@
+<!doctype html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <link rel="stylesheet" type="text/css" href="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8/themes/smoothness/jquery-ui.css" />
+    <link rel="stylesheet" type="text/css" href="../css/jquery.taskbar.css" />
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.5.1/jquery.js"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jqueryui/1.8.10/jquery-ui.js"></script>
+    <script src="../src/jquery.taskbar.js"></script>
+    <script>
+        $(function() {
+            var i = 1;
+            $("#makedlg").click(function() {
+                $("#dialog").clone().attr("id", "dialog" + i).attr("title", "buzzilla dialog " + i).taskbardialog({
+                    taskbar: "#taskbar"
+                });
+                console.log($("#dialog" + i).taskbardialog("option", "title"));
+                i++;
+            });
+        });
+    </script>
+    <style type="text/css">
+        body {
+            margin: 0;
+            padding: 0;
+
+        }
+    </style>
+</head>
+<body>
+<label for="makedlg"></label><input type="button" id="makedlg" value="click me"/>
+
+
+<div id="dialog" class="buzzilla" title="buzzilla dialog" style="display: none">
+    <fieldset title="Just a field set">
+        <p><label>Name: <input type="text"></label></p>
+        <p><label>Sex:
+            <input type="radio" name="sex" value="M">Male
+            <input type="radio" name="sex" value="F">Female
+        </label></p>
+    </fieldset>
+</div>
+
+<div id="taskbar" style="width: 120px; float: right; border: 1px solid black">
+    Taskbar
+</div>
+</body>
+</html>
