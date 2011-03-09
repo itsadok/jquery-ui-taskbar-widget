@@ -98,6 +98,11 @@ $.widget("buzzilla.taskbardialog", $.ui.dialog, {
                         .click(function() {
                             if(self.options.minimized) {
                                 self.restore();
+                            } else {
+                                var active = self.taskbar.data("active_dialog");
+                                if(active == self) {
+                                    self.minimize();
+                                }
                             }
                             self.moveToTop();
                         });
