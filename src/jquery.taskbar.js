@@ -111,14 +111,55 @@ $.widget("buzzilla.taskbardialog", $.ui.dialog, {
         $.ui.dialog.prototype._init.apply(this, arguments);
     },
 
+    __layout: function(el) {
+        var layout;
+        layout = el.offset();
+        layout.height = el.css("height");
+        layout.width = el.css("width");
+        return layout;
+    },
+
     minimize: function(event) {
+        var self = this;
+        self.dialogLayout = self.__layout(self.uiDialog);
+
+        if(!self.options.minimized) {
+            var placeholder = $("<div></div>")
+                    .appendTo("body")
+                    .addClass("ui-dialog-placeholder")
+                    .css(self.dialogLayout)
+                    .animate(self.__layout(self.tile), {
+                        duration: "fast",
+                        complete: function() {
+                            placeholder.remove();
+                        }
+                    });
+        }
+
         this.uiDialog.hide();
         this.options.minimized = true;
     },
 
     restore: function(event) {
-        this.uiDialog.show();
-        this.options.minimized = false;
+        var self = this;
+
+        if(self.options.minimized && self.dialogLayout) {
+            var placeholder = $("<div></div>")
+                    .appendTo("body")
+                    .addClass("ui-dialog-placeholder")
+                    .css(self.__layout(self.tile))
+                    .animate(self.dialogLayout, {
+                        duration: "fast",
+                        complete: function() {
+                            placeholder.remove();
+                            self.uiDialog.show();
+                            self.options.minimized = false;
+                        }
+                    });
+        } else {
+            self.uiDialog.show();
+            self.options.minimized = false;
+        }
     },
 
     close: function(event) {
