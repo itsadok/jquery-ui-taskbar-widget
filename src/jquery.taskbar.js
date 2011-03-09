@@ -30,6 +30,16 @@ $.widget("buzzilla.taskbardialog", $.ui.dialog, {
         var self = this,
                 options = self.options,
 
+                uiDialogTitlebar = self.uiDialogTitlebar
+                        .hover(
+                            function() {
+                                uiDialogTitlebar.addClass('ui-state-hover');
+                            },
+                            function() {
+                                uiDialogTitlebar.removeClass('ui-state-hover');
+                            }
+                        ),
+
                 uiDialogTitlebarMinimize = $( "<a href='#'></a>" )
                         .addClass( "ui-dialog-titlebar-minimize  ui-corner-all" )
                         .attr( "role", "button" )
@@ -58,25 +68,42 @@ $.widget("buzzilla.taskbardialog", $.ui.dialog, {
                         .text( options.minimizeText )
 	        			.appendTo( uiDialogTitlebarMinimize );
 
+        this.element
+                .bind("taskbardialogfocus", function(event) {
+                    uiDialogTitlebar.addClass('ui-state-focus');
+                    self.tile.addClass("ui-state-focus");
+                    var active = self.taskbar.data("active_dialog");
+                    if(active != self) {
+                        if(active) active._trigger("blur", event);
+                        self.taskbar.data("active_dialog", self);
+                    }
+                })
+                .bind("taskbardialogblur", function() {
+                    uiDialogTitlebar.removeClass('ui-state-focus');
+                    self.tile.removeClass("ui-state-focus");
+                });
+
         if(this.options.taskbar) {
-            var taskbar = $(this.options.taskbar);
-            taskbar.addClass("ui-taskbar")
-            var tile = $("<div></div>")
-                    .addClass(
-                        'ui-dialog-titlebar ' +
-                        'ui-widget-header ' +
-                        'ui-corner-all ' +
-                        'ui-helper-clearfix'
-                    )
-                    .text(this.options.title);
-            tile.appendTo(taskbar);
-            tile.click(function() {
-                if(self.options.minimized) {
-                    self.restore();
-                }
-                self.moveToTop();
-            });
-            this.options.tile = tile;
+            var taskbar = (self.taskbar = $(this.options.taskbar))
+                        .addClass("ui-taskbar"),
+                tile = (self.tile = $("<div></div>"))
+                        .addClass(
+                            'ui-taskbar-tile ' +
+                            'ui-widget-header ' +
+                            'ui-corner-all ' +
+                            'ui-helper-clearfix'
+                        )
+                        .text(this.options.title)
+                        .appendTo(taskbar)
+                        .click(function() {
+                            if(self.options.minimized) {
+                                self.restore();
+                            }
+                            self.moveToTop();
+                        });
+        } else {
+            self.taskbar = $();
+            self.tile = $();
         }
     },
 
@@ -95,8 +122,8 @@ $.widget("buzzilla.taskbardialog", $.ui.dialog, {
     },
 
     close: function(event) {
-        if(this.options.tile) {
-            this.options.tile.remove();
+        if(this.tile) {
+            this.tile.remove();
         }
         $.ui.dialog.prototype.close.apply(this, arguments);
     },
